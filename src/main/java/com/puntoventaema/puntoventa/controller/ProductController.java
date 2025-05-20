@@ -24,7 +24,7 @@ public class ProductController {
 
     /*endpint: Es una URL o ruta que puede ser accedida desde el exterior. */
 
-
+    //a. mostrar lista de productos
     @GetMapping
     public ResponseEntity<List<Product>> getProducts(){
         return ResponseEntity.ok(productService.findAll()); //respuesta HTTP
@@ -60,7 +60,7 @@ public class ProductController {
 
 
     //d. buscar producto por marca
-    @GetMapping("/marca/{marca}") //"GET /producto/marca/{marca}" = endpoint
+    @GetMapping("/marca/{marca}")
     public ResponseEntity<?> getProductByMarca(@PathVariable String marca){
         try {
             List<Product> products = productService.findByMarca(marca);

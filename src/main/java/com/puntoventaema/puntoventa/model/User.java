@@ -14,7 +14,7 @@ public class User {
     private Long id;
     private String nombreUsuario;
     private String clave;
-    private String rol; // (Admin o Cajero)
+    private String rol; // (Admin o Cajero,Vendedor, Encargado, etc...)
     private Boolean activo = true;
 
     //Constructor vacio

@@ -67,16 +67,27 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findByNombreUsuario(String nombreUsuario){
-        return userRepository.findByNombreUsuario(nombreUsuario);
+        User user = userRepository.findByNombreUsuario(nombreUsuario);
+        if(user ==null){
+            throw new NoSuchElementException("Usuario no encontrado con nombre: "+nombreUsuario);
+        }
+        return user;
+    }
 
-        /*Spring Data JPA: lo crea automáticamente a "findByNombreUsuario"
+    @Override
+    public List<User> findByActivos(Boolean estado){
+        return userRepository.findByActivo(estado);
+    }
+
+
+
+
+
+    /*Spring Data JPA: lo crea automáticamente a "findByNombreUsuario"
           gracias a una característica llamada query
           derivada por nombre de metodo.*/
 
-        /*La "magia" está en Spring Data JPA. usando el prefijo "findBy..."()*/
-
-
-    }
+    /*La "magia" está en Spring Data JPA. Usando el prefijo "findBy..."()*/
 
 }
 

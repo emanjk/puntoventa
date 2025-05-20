@@ -13,6 +13,7 @@ public interface UserService {
     void delete(Long id); //eliminar usuario por id
     List<User> findAll(); //listar todos los usuarios
     User findByNombreUsuario(String nombreUsuario); //buscar usuario por su nombre
+    List<User> findByActivos(Boolean estado);
 
     //métodos por defecto de JPA son: save, findById(), deleteById(), etc..
 }
