@@ -14,7 +14,7 @@ public class ProductDTO {
     public ProductDTO() {
     }
 
-    //Metodos Getters
+
     public ProductDTO(Long id, String codigoBarras, String descripcion, String marca, Double precio, Integer stock, Boolean activo) {
         this.id = id;
         this.codigoBarras = codigoBarras;
@@ -25,6 +25,7 @@ public class ProductDTO {
         this.activo = activo;
     }
 
+    //Metodos Getters
     public Long getId() {
         return id;
     }

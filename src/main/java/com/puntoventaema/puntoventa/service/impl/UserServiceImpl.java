@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findByNombreUsuario(String nombreUsuario){
-        User user = userRepository.findByNombreUsuario(nombreUsuario);
+        User user = userRepository.findByNombreUsuario(nombreUsuario); //Con JPA retorna un elemento o null
         if(user ==null){
             throw new NoSuchElementException("Usuario no encontrado con nombre: "+nombreUsuario);
         }
@@ -76,7 +76,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> findByActivos(Boolean estado){
-        return userRepository.findByActivo(estado);
+        return userRepository.findByActivo(estado); //Con JPA retorna una lista de User o Lista vacía.
     }
 
 

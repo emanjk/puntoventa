@@ -1,6 +1,8 @@
 package com.puntoventaema.puntoventa.controller;
 
 
+import com.puntoventaema.puntoventa.dto.UserResponseDTO;
+import com.puntoventaema.puntoventa.mapper.UserMapper;
 import com.puntoventaema.puntoventa.model.User;
 import com.puntoventaema.puntoventa.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,26 +23,34 @@ public class UserController {
 
     // 2. Métodos GET
     @GetMapping
-    public ResponseEntity<List<User>> getUser(){
-        return ResponseEntity.ok(userService.findAll());
+    public ResponseEntity<List<UserResponseDTO>> getUser(){
+        List<User> users = userService.findAll();
+        List<UserResponseDTO> userDtos = users.stream()
+                .map(UserMapper ::toDto)
+                .toList();
+
+        return ResponseEntity.ok(userDtos); //200 OK
+
     }
 
     //usuario por id
     @GetMapping("/id/{id}")
     public ResponseEntity<?> getUser(@PathVariable Long id){
-        User user = userService.findById(id);
+        User user = userService.findById(id); //con JPA nos devuelve un User o null
         if(user == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado con el id: "+ id);
         }
-        return ResponseEntity.ok(user);
+        UserResponseDTO userDto = UserMapper.toDto(user);
+        return  ResponseEntity.ok(userDto);
     }
 
     //usuario por nombre usuario
     @GetMapping("/name/{name}")
     public ResponseEntity<?> getUserByName(@PathVariable String name){
         try{
-            User userName = userService.findByNombreUsuario(name);
-            return  ResponseEntity.ok(userName);
+            User user = userService.findByNombreUsuario(name); //con JPA nos devuelve un User o null.
+            UserResponseDTO userDto = UserMapper.toDto(user);
+            return ResponseEntity.ok(userDto);
 
         }catch(NoSuchElementException e){
 
@@ -52,26 +62,38 @@ public class UserController {
 
     //usuarios por activos o inactivos
     @GetMapping("/activos/{activos}")
-    public ResponseEntity<?> getUserByActivos(@RequestParam Boolean estado){
-        List<User> users = userService.findByActivos(estado);
-        return ResponseEntity.ok(users);
+    public ResponseEntity<?> getUserByActivos(@PathVariable Boolean activos){
+        List<User> users = userService.findByActivos(activos); //con JPA nos devuelve una lista vacía si no hay coincidencias.
+        List<UserResponseDTO> usersDtos = users.stream().map(UserMapper ::toDto).toList();
+
+        return ResponseEntity.ok(usersDtos);
 
     }
 
+
+
     //3. Metodo POST
     @PostMapping
-    public ResponseEntity<?> saveProduct(@RequestBody User user){
+    public ResponseEntity<?> saveProduct(@RequestBody UserResponseDTO userDto){
         try{
+            //convertimos el DTO a Entidad
+            User user = UserMapper.toEntity(userDto);
+
+            //guardamos el usuario
             User saveUser = userService.save(user);
-            return ResponseEntity.status(HttpStatus.CREATED).body(saveUser); //HTTP 201
+
+            //devolvemos el DTO como respuesta
+            UserResponseDTO responseDto = UserMapper.toDto(saveUser);
+
+            return  ResponseEntity.ok(responseDto);
+
 
         }catch (IllegalArgumentException e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
-
-
-
     }
+
+
 
     //4. Metodo Put (Luego con Spring Security evitamos cambiar él: rol y la clave)
     @PutMapping("/{id}")

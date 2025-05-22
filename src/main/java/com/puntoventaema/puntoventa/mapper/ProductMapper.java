@@ -6,12 +6,13 @@ import com.puntoventaema.puntoventa.model.Product;
    usarlo para trasferir datos entre capas */
 
 
-//Mapper manual
+//Creamos un Mapper manualmente
 public class ProductMapper {
 
     // 1. de Entidad a DTO
     public static ProductDTO toDto (Product product){
             ProductDTO dto = new ProductDTO();
+
             dto.setId(product.getId());
             dto.setCodigoBarras(product.getCodigoBarras());
             dto.setDescripcion(product.getDescripcion());
@@ -25,6 +26,7 @@ public class ProductMapper {
     // 2. de DTO a Entidad
     public static Product toEntity(ProductDTO dto){
         Product product = new Product();
+
         product.setId(dto.getId()); // Esto puede omitirse en un POST
         product.setCodigoBarras(dto.getCodigoBarras());
         product.setDescripcion(dto.getDescripcion());

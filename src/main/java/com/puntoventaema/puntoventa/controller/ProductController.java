@@ -1,6 +1,8 @@
 package com.puntoventaema.puntoventa.controller;
 
 
+import com.puntoventaema.puntoventa.dto.ProductDTO;
+import com.puntoventaema.puntoventa.mapper.ProductMapper;
 import com.puntoventaema.puntoventa.model.Product;
 import com.puntoventaema.puntoventa.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,11 +90,18 @@ public class ProductController {
 
     //a. Guardamos un producto
     @PostMapping // "/producto" es un endpoint para crear un producto
-    public ResponseEntity<?> saveProduct(@RequestBody Product product){
+    public ResponseEntity<?> saveProduct(@RequestBody ProductDTO productDto){
         try{
-            //Controller --> llama a service para guardar el producto
-            Product saveProduct = productService.save(product);//la entidad se pasa entre capas (Controller --> Service --> Repository)
-            return ResponseEntity.status(HttpStatus.CREATED).body(saveProduct); //HTTP 201
+            //Convierte el DTO a Entidad
+            Product product = ProductMapper.toEntity(productDto); //retorna un Product
+
+            //Guarda el Producto
+            Product saveProduct = productService.save(product);
+
+            //Convertir la Entidad guardada a DTO y devolver
+            ProductDTO saveDto = ProductMapper.toDto(saveProduct);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(saveDto);
 
         }catch(IllegalArgumentException e){
 
@@ -104,32 +113,35 @@ public class ProductController {
 
 //3. Definimos los endpoints HTPP del controlador (PUT)
 
+
     @PutMapping("/{id}") // {id} en la URL para identificar el producto a modificar
-    public ResponseEntity<?> putProduct(@PathVariable Long id, @RequestBody Product product) {
-        try {
-            // Verificamos si el producto existe con el ID proporcionado en la URL
+    public ResponseEntity<?> putProduct(@PathVariable Long id, @RequestBody ProductDTO productDto) {
+        try{
+            // Buscar el producto existente
             Product existingProduct = productService.findById(id);
             if (existingProduct == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body("Producto no encontrado con ID: " + id); // 404 si no existe
+                        .body("Producto no encontrado con ID: " + id);
             }
 
-            // Validación básica de código de barras (opcional)
-            if (product.getCodigoBarras() == null || product.getCodigoBarras().trim().isEmpty()) {
+            // Validar código de barras (opcional)
+            if (productDto.getCodigoBarras() == null || productDto.getCodigoBarras().trim().isEmpty()) {
                 return ResponseEntity.badRequest().body("El código de barras no puede estar vacío.");
             }
 
-            // Actualizar los campos del producto (solo los proporcionados)
-            existingProduct.setCodigoBarras(product.getCodigoBarras());
-            existingProduct.setDescripcion(product.getDescripcion());
-            existingProduct.setMarca(product.getMarca());
-            existingProduct.setPrecio(product.getPrecio());
-            existingProduct.setStock(product.getStock());
-            existingProduct.setActivo(product.getActivo());
+            // Actualizar campos desde el DTO
+            existingProduct.setCodigoBarras(productDto.getCodigoBarras());
+            existingProduct.setDescripcion(productDto.getDescripcion());
+            existingProduct.setMarca(productDto.getMarca());
+            existingProduct.setPrecio(productDto.getPrecio());
+            existingProduct.setStock(productDto.getStock());
+            existingProduct.setActivo(productDto.getActivo());
 
-            // Guardamos y devolvemos el producto actualizado
+            // Guardar y devolver como DTO
             Product saved = productService.save(existingProduct);
-            return ResponseEntity.ok(saved); // 200 OK con el producto actualizado
+            ProductDTO savedDto = ProductMapper.toDto(saved);
+
+            return ResponseEntity.ok(savedDto);
 
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
@@ -138,7 +150,7 @@ public class ProductController {
 
 
     @PatchMapping("/{id}")
-    public ResponseEntity<?> patchProduct(@PathVariable Long id, @RequestBody Product product) {
+    public ResponseEntity<?> patchProduct(@PathVariable Long id, @RequestBody ProductDTO productDto) {
         // Buscar el producto en la base de datos por ID
         Product existingProduct = productService.findById(id);
         if (existingProduct == null) {
@@ -147,33 +159,35 @@ public class ProductController {
         }
 
         // Actualizar los campos solo si no son nulos
-        if (product.getCodigoBarras() != null) {
-            existingProduct.setCodigoBarras(product.getCodigoBarras());
+        if (productDto.getCodigoBarras() != null) {
+            existingProduct.setCodigoBarras(productDto.getCodigoBarras());
         }
 
-        if (product.getDescripcion() != null) {
-            existingProduct.setDescripcion(product.getDescripcion());
+        if (productDto.getDescripcion() != null) {
+            existingProduct.setDescripcion(productDto.getDescripcion());
         }
 
-        if (product.getMarca() != null) {
-            existingProduct.setMarca(product.getMarca());
+        if (productDto.getMarca() != null) {
+            existingProduct.setMarca(productDto.getMarca());
         }
 
-        if (product.getPrecio() != null) {
-            existingProduct.setPrecio(product.getPrecio());
+        if (productDto.getPrecio() != null) {
+            existingProduct.setPrecio(productDto.getPrecio());
         }
 
-        if (product.getStock() != null) {
-            existingProduct.setStock(product.getStock());
+        if (productDto.getStock() != null) {
+            existingProduct.setStock(productDto.getStock());
         }
 
-        if (product.getActivo() != null) {
-            existingProduct.setActivo(product.getActivo());
+        if (productDto.getActivo() != null) {
+            existingProduct.setActivo(productDto.getActivo());
         }
 
         // Guardar el producto actualizado
         Product updatedProduct = productService.save(existingProduct);
-        return ResponseEntity.ok(updatedProduct); // Responder con el producto actualizado
+        ProductDTO updatedDto  = ProductMapper.toDto(updatedProduct);
+        return ResponseEntity.ok(updatedDto );
+
     }
 
     //baja lógica
