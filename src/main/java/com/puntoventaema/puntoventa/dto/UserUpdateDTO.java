@@ -1,26 +1,23 @@
 package com.puntoventaema.puntoventa.dto;
 
-//Este DTO se usa para crear un usuario (sin ID)
-public class UserCreateDTO {
+public class UserUpdateDTO {
 
-    //Atributos
     private String nombreUsuario;
-    private String clave; // necesaria en el alta.
+    private String clave;
     private String rol;
-    private Boolean activo = true;
+    private Boolean activo;
 
-    public UserCreateDTO() {
+    public UserUpdateDTO() {
     }
 
-    public UserCreateDTO(String nombreUsuario, String clave, String rol, Boolean activo) {
+    public UserUpdateDTO(String nombreUsuario, String clave, String rol, Boolean activo) {
         this.nombreUsuario = nombreUsuario;
         this.clave = clave;
         this.rol = rol;
-
+        this.activo = activo;
     }
 
     //get
-
     public String getNombreUsuario() {
         return nombreUsuario;
     }
@@ -36,6 +33,7 @@ public class UserCreateDTO {
     public Boolean getActivo() {
         return activo;
     }
+
 
     //set
     public void setNombreUsuario(String nombreUsuario) {

@@ -1,8 +1,6 @@
 package com.puntoventaema.puntoventa.service;
 
-
 import com.puntoventaema.puntoventa.model.Product;
-
 import java.util.List;
 
 public interface ProductService {
